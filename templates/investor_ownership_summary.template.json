@@ -1,0 +1,983 @@
+{
+  "template": "Investor Ownership Summary",
+  "version": "1.0",
+  "page": {
+    "size": "US Letter",
+    "orientation": "portrait",
+    "width_pt": 612,
+    "height_pt": 792,
+    "margins_in": {
+      "left": 0.6,
+      "right": 0.6,
+      "top": 0.5,
+      "bottom": 0.85
+    },
+    "pages": 1,
+    "overflow_rule": "Render, count pages, and step down through FIT_SCALES until the report is exactly one page. If the smallest scale still overflows, fail instead of saving."
+  },
+  "fit_scales": [
+    1.1,
+    1.05,
+    1.0,
+    0.96,
+    0.92,
+    0.88,
+    0.84,
+    0.8,
+    0.76
+  ],
+  "typography": {
+    "family": "Helvetica / Helvetica-Bold (Inter or Open Sans when embedded)",
+    "title_pt": 17,
+    "subtitle_pt": 9,
+    "section_heading_pt": 10.5,
+    "body_pt": 8.3,
+    "small_pt": 7.4,
+    "notes_pt": 6.2,
+    "table_pt": 7.3,
+    "metric_label_pt": 7.4,
+    "metric_value_pt": 15,
+    "hero_value_pt": 17,
+    "blocked_banner_pt": 22,
+    "footer_pt": 7,
+    "scaling": "All sizes except the footer are multiplied by the active fit scale; metric values never scale above 1.0",
+    "minimum_readable_pt": 6.5
+  },
+  "color_roles": {
+    "ink": {
+      "hex": "#000000",
+      "role": "Title, headings, metric values, bold table rows"
+    },
+    "body": {
+      "hex": "#4B4F58",
+      "role": "Body copy and table cells"
+    },
+    "muted": {
+      "hex": "#7A7A7A",
+      "role": "Subtitle, source locations, notes, disclaimer, footer text"
+    },
+    "coral": {
+      "hex": "#ED5644",
+      "role": "Hero metric (basic ownership) and the 'Unable to calculate' banner only"
+    },
+    "rule": {
+      "hex": "#CBD6E2",
+      "role": "Table row dividers, metric box border, footer rule"
+    },
+    "gray_bg": {
+      "hex": "#F7F7F7",
+      "role": "Table header fill"
+    },
+    "cream": {
+      "hex": "#FFFDF6",
+      "role": "Metric strip background; new-investor table row"
+    }
+  },
+  "footer": {
+    "pattern": "[Document title]   [Page #]   Compiled on [Month DD, YYYY] by TEN Capital Network   [TEN Capital logo]",
+    "document_title": "[Company name] [Round label] Investor Ownership Summary",
+    "document_title_blocked": "[Company name] [Round label] Ownership - Unable to Calculate",
+    "font": "7 pt, centred, muted",
+    "logo": "assets/TEN_Capital_logo_footer.png at 0.67 x 0.25 in",
+    "rule": "0.5 pt hairline above the footer"
+  },
+  "variants": {
+    "calculated": {
+      "when": "All inputs resolved; ownership calculated.",
+      "layout": "+------------------------------------------------------------------------------+\n| [Company name] - [Round label] investor ownership                            |\n| Investor: [Investor] | Round: [Round share class] | Cap table as of | Prepared |\n+---------------+---------------+---------------+---------------+--------------+\n| Check size    | New shares    | BASIC OWN.    | Fully diluted | Post-money   |\n| [$X,XXX,XXX]  | [N,NNN,NNN.NN]| [NN.NNN%]*    | [NN.NNN%]     | [$XX,XXX,XXX]|\n+---------------+---------------+---------------+---------------+--------------+\n| Share math sentence                                                          |\n| POST-MONEY VALUATION AND BASIS  [pre + proceeds; implied; bridge]            |\n| OWNERSHIP BY CLASS: BEFORE -> AFTER                                          |\n|  Class | Before sh. | basic | FD | After sh. | basic | FD | Chg FD           |\n|  ... one row per class ... | Total | of which [Investor] (highlighted)       |\n| Reconciliation sentence                                                      |\n| TOP 3 DATA ISSUES  1. 2. 3.                                                  |\n| SOURCES AND ASSUMPTIONS  [inputs + sources, treatment]                       |\n| Disclaimer                                                                   |\n|   [Title]   [Page #]   Compiled on [date] by TEN Capital Network   [logo]    |\n+------------------------------------------------------------------------------+\n* coral hero value",
+      "sections": [
+        {
+          "id": "header",
+          "heading": "",
+          "purpose": "Identifies company, round, investor and dates.",
+          "fields": [
+            {
+              "key": "company",
+              "label": "Company",
+              "fmt": "text",
+              "source": "Cap table title cell (text before 'Cap Table')",
+              "placeholder": "[Company name]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "round_label",
+              "label": "Round",
+              "fmt": "text",
+              "source": "Name of the round share class in the cap table header, without the 'Preferred (code)' suffix",
+              "placeholder": "[Round label]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "investor",
+              "label": "Investor",
+              "fmt": "text",
+              "source": "--investor (default 'New investor')",
+              "placeholder": "[Investor name]",
+              "required": true,
+              "empty": "",
+              "max_chars": 60,
+              "notes": ""
+            },
+            {
+              "key": "round_class_name",
+              "label": "Round security",
+              "fmt": "text",
+              "source": "Full round share-class name from the cap table",
+              "placeholder": "[Round share class]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "cap_table_as_of",
+              "label": "Cap table as of",
+              "fmt": "date",
+              "source": "Cap table 'As of' line",
+              "placeholder": "[M/D/YYYY]",
+              "required": false,
+              "empty": "date not stated",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "prepared_date",
+              "label": "Prepared",
+              "fmt": "date",
+              "source": "Run date",
+              "placeholder": "[Month DD, YYYY]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            }
+          ],
+          "pattern": "{company} - {round_label} investor ownership\nInvestor: {investor} | Round: {round_class_name} (priced) | Cap table as of {cap_table_as_of} | Prepared {prepared_date}",
+          "columns": [],
+          "rows": "",
+          "fixed_text": "",
+          "rules": [],
+          "style": "title"
+        },
+        {
+          "id": "key_metrics",
+          "heading": "",
+          "purpose": "Five headline figures in one strip; basic ownership is the single coral hero value.",
+          "fields": [
+            {
+              "key": "check_size",
+              "label": "Check size",
+              "fmt": "usd0",
+              "source": "--check-size, or the full open allocation when stated unambiguously",
+              "placeholder": "[$ amount]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "new_shares",
+              "label": "New {round_label} shares",
+              "fmt": "shares",
+              "source": "check size / share price (unrounded)",
+              "placeholder": "[shares]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "basic_ownership",
+              "label": "Basic ownership",
+              "fmt": "pct3",
+              "source": "Investor After shares / After issued and outstanding shares",
+              "placeholder": "[NN.NNN%]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": "Hero value (coral)"
+            },
+            {
+              "key": "fd_ownership",
+              "label": "Fully diluted ownership",
+              "fmt": "pct3",
+              "source": "Investor After shares / After fully diluted shares",
+              "placeholder": "[NN.NNN%]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "post_money",
+              "label": "Post-money valuation",
+              "fmt": "usd0",
+              "source": "Priced pre-money + proceeds in the modelled financing",
+              "placeholder": "[$ amount]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            }
+          ],
+          "pattern": "",
+          "columns": [],
+          "rows": "",
+          "fixed_text": "",
+          "rules": [
+            "Labels on one line, values on the next, centred, five equal columns."
+          ],
+          "style": "metrics"
+        },
+        {
+          "id": "share_math",
+          "heading": "",
+          "purpose": "Shows how the new share count was derived and what each ownership basis contains.",
+          "fields": [
+            {
+              "key": "check_size_exact",
+              "label": "Check size",
+              "fmt": "usd2",
+              "source": "Resolved input",
+              "placeholder": "[$X,XXX,XXX.XX]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "share_price",
+              "label": "Share price",
+              "fmt": "usd4",
+              "source": "Cap-table round issue price, or --share-price",
+              "placeholder": "[$N.NNNN]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "new_shares_exact",
+              "label": "New shares (4 dp)",
+              "fmt": "shares4",
+              "source": "check / price, unrounded",
+              "placeholder": "[N,NNN,NNN.NNNN]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "fraction_note",
+              "label": "Fractional-share note",
+              "fmt": "text",
+              "source": "Stated convention, else the confirmation note",
+              "placeholder": "[fractional-share convention or confirmation note]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "after_basic_shares",
+              "label": "After outstanding shares",
+              "fmt": "shares",
+              "source": "Sum of After basic column",
+              "placeholder": "[NN,NNN,NNN.NN]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "after_fd_shares",
+              "label": "After fully diluted shares",
+              "fmt": "shares",
+              "source": "Sum of After FD column",
+              "placeholder": "[NN,NNN,NNN.NN]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            }
+          ],
+          "pattern": "New shares = {check_size_exact} / {share_price} = {new_shares_exact} (unrounded; {fraction_note}). Basic = issued and outstanding common + preferred ({after_basic_shares} after); fully diluted adds options/RSUs and the unissued pool ({after_fd_shares} after).",
+          "columns": [],
+          "rows": "",
+          "fixed_text": "",
+          "rules": [],
+          "style": "small"
+        },
+        {
+          "id": "valuation",
+          "heading": "Post-money valuation and basis",
+          "purpose": "States the post-money, its components and source, the implied priced valuations on both share bases, and a bridge that explains every dollar of difference.",
+          "fields": [
+            {
+              "key": "post_money",
+              "label": "Post-money",
+              "fmt": "usd0",
+              "source": "pre_money + proceeds",
+              "placeholder": "[$XX,XXX,XXX]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "pre_money",
+              "label": "Pre-money",
+              "fmt": "usd0",
+              "source": "Deck (single consistent figure), --pre-money, or price x pre-round outstanding shares",
+              "placeholder": "[$X,XXX,XXX]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "pre_money_source",
+              "label": "Pre-money source",
+              "fmt": "text",
+              "source": "Exact location(s) of the pre-money figure",
+              "placeholder": "[Slide N \"quoted label\"]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "proceeds",
+              "label": "Proceeds",
+              "fmt": "usd0",
+              "source": "Sum of the components below",
+              "placeholder": "[$X,XXX,XXX]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "proceeds_breakdown",
+              "label": "Proceeds components",
+              "fmt": "list",
+              "source": "Issued round cash + commitment rows in Before [+ commitments not in cap table] [+ kept plug row] + this check; zero-value optional components omitted",
+              "placeholder": "[issued cash $X; commitment rows $X; this check $X]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "implied_pre_basic",
+              "label": "Implied pre-money (outstanding)",
+              "fmt": "usd0",
+              "source": "price x (Before outstanding - all round shares)",
+              "placeholder": "[$X,XXX,XXX]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "implied_pre_fd",
+              "label": "Implied pre-money (fully diluted)",
+              "fmt": "usd0",
+              "source": "price x (Before fully diluted - all round shares)",
+              "placeholder": "[$X,XXX,XXX]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "implied_post_basic",
+              "label": "Implied post-money (outstanding)",
+              "fmt": "usd0",
+              "source": "price x After outstanding",
+              "placeholder": "[$X,XXX,XXX]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "implied_post_fd",
+              "label": "Implied post-money (fully diluted)",
+              "fmt": "usd0",
+              "source": "price x After fully diluted",
+              "placeholder": "[$X,XXX,XXX]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "post_gap",
+              "label": "Gap",
+              "fmt": "usd0",
+              "source": "implied post (outstanding) - post-money",
+              "placeholder": "[$X,XXX]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "bridge_items",
+              "label": "Bridge",
+              "fmt": "list",
+              "source": "calc.Result.post_bridge items with |value| >= $0.50",
+              "placeholder": "[component $X; component $X]",
+              "required": true,
+              "empty": "no difference",
+              "max_chars": null,
+              "notes": ""
+            }
+          ],
+          "pattern": "{post_money} = pre-money {pre_money} ({pre_money_source}) + proceeds {proceeds} ({proceeds_breakdown}). Implied priced valuations at {share_price}/share: pre-money {implied_pre_basic} on outstanding shares ({implied_pre_fd} fully diluted); post-money {implied_post_basic} on outstanding shares ({implied_post_fd} fully diluted). The {post_gap} gap to the stated-basis post-money comes from {bridge_items}.",
+          "columns": [],
+          "rows": "",
+          "fixed_text": "",
+          "rules": [
+            "Never label price x outstanding shares as a fully diluted valuation."
+          ],
+          "style": "small"
+        },
+        {
+          "id": "class_table",
+          "heading": "Ownership by class: Before (source pro forma) -> After",
+          "purpose": "Every security class in the source, Before and After, with the investor's line kept distinct.",
+          "fields": [
+            {
+              "key": "class_rows",
+              "label": "Class rows",
+              "fmt": "table",
+              "source": "calc.Result.classes in source order: common, preferred series, warrants, options/RSUs, unissued pool",
+              "placeholder": "[Class name] | [N,NNN,NNN] | [NN.NN%] | [NN.NN%] | [N,NNN,NNN] | [NN.NN%] | [NN.NN%] | [+N.NNN pp]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "total_row",
+              "label": "Total row",
+              "fmt": "table",
+              "source": "Column totals (fully diluted share counts)",
+              "placeholder": "Total | [NN,NNN,NNN] | 100.00% | 100.00% | [NN,NNN,NNN] | 100.00% | 100.00% |",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "investor_row",
+              "label": "Investor row",
+              "fmt": "table",
+              "source": "New-investor row (highlighted)",
+              "placeholder": "of which [Investor name] ([Round label]) | - | - | - | [N,NNN,NNN] | [NN.NN%] | [NN.NN%] | [+N.NNN pp]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            }
+          ],
+          "pattern": "",
+          "columns": [
+            "Class",
+            "Before sh.",
+            "Before basic",
+            "Before FD",
+            "After sh.",
+            "After basic",
+            "After FD",
+            "Chg FD"
+          ],
+          "rows": "One row per class, then Total (bold), then the investor row (cream, bold).",
+          "fixed_text": "",
+          "rules": [
+            "Basic % columns print 'excl.' for warrants, options/RSUs and the unissued pool.",
+            "Share counts: whole numbers without decimals. Change column: percentage points, 3 dp, '0.000 pp' when the rounded change is zero.",
+            "Preferred classes are counted 1:1 as converted."
+          ],
+          "style": "table"
+        },
+        {
+          "id": "reconciliation",
+          "heading": "",
+          "purpose": "Tie-out status and how the round adjustments were applied.",
+          "fields": [
+            {
+              "key": "tie_out_statuses",
+              "label": "Tie-outs",
+              "fmt": "list",
+              "source": "First three calc checks: outstanding, fully diluted, class totals (OK / FAIL)",
+              "placeholder": "[check]: [OK|FAIL]; [check]: [OK|FAIL]; [check]: [OK|FAIL]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "plug_clause",
+              "label": "Plug-row clause",
+              "fmt": "text",
+              "source": "Present only when an unsold plug row is released",
+              "placeholder": " and removes the unsold plug row '[row label]' ([N,NNN,NNN.NN] sh) through a separate adjustment",
+              "required": false,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "commitments_clause",
+              "label": "Commitments clause",
+              "fmt": "text",
+              "source": "Depends on --commitments-in-before",
+              "placeholder": "[Commitments already in the pro forma are not added again. | Commitments not in the cap table are added as one aggregate row.]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            }
+          ],
+          "pattern": "Before ties to the source: {tie_out_statuses}. {round_label} After includes the new investor{plug_clause}. {commitments_clause}",
+          "columns": [],
+          "rows": "",
+          "fixed_text": "",
+          "rules": [],
+          "style": "small"
+        },
+        {
+          "id": "top_issues",
+          "heading": "Top 3 data issues",
+          "purpose": "The three most material source problems: severity first, then materiality priority. INFO items never appear.",
+          "fields": [
+            {
+              "key": "title",
+              "label": "Finding",
+              "fmt": "text",
+              "source": "validate.Issue.title (generated from the values found)",
+              "placeholder": "[Finding title]",
+              "required": true,
+              "empty": "",
+              "max_chars": 110,
+              "notes": ""
+            },
+            {
+              "key": "severity",
+              "label": "Severity",
+              "fmt": "text",
+              "source": "HIGH / MEDIUM / LOW",
+              "placeholder": "HIGH|MEDIUM|LOW",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "evidence",
+              "label": "Evidence",
+              "fmt": "text",
+              "source": "Issue arithmetic, else detail",
+              "placeholder": "[Both values and the arithmetic]",
+              "required": true,
+              "empty": "",
+              "max_chars": 330,
+              "notes": ""
+            },
+            {
+              "key": "sources",
+              "label": "Source",
+              "fmt": "text",
+              "source": "Up to four exact locations (Sheet!Cell, Slide N)",
+              "placeholder": "[Sheet!Cell; Slide N]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            }
+          ],
+          "pattern": "{n}. {title} [{severity}] - {evidence} Source: {sources}.",
+          "columns": [],
+          "rows": "",
+          "fixed_text": "",
+          "rules": [
+            "Exactly three items when three or more non-INFO issues exist; fewer otherwise.",
+            "Empty state: 'No material data issues found.'"
+          ],
+          "style": "small"
+        },
+        {
+          "id": "sources_assumptions",
+          "heading": "Sources and assumptions",
+          "purpose": "Every resolved input with its exact source, then the fixed treatment statement.",
+          "fields": [
+            {
+              "key": "name",
+              "label": "Input",
+              "fmt": "text",
+              "source": "resolve.ResolvedInput.name",
+              "placeholder": "[Input name]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "value",
+              "label": "Value",
+              "fmt": "text",
+              "source": "Resolved value",
+              "placeholder": "[Value]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "source",
+              "label": "Source",
+              "fmt": "text",
+              "source": "Workbook, tab and cell, deck slide and quoted label, or CLI flag",
+              "placeholder": "[File | Location \"quoted label\"]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            }
+          ],
+          "pattern": "{name}: {value} - {source}",
+          "columns": [],
+          "rows": "",
+          "fixed_text": "Treatment: preferred at 1:1; options/RSUs and pool excluded from basic, included in fully diluted; no pool top-up modelled unless sourced; convertibles listed without share counts not added.",
+          "rules": [
+            "Items joined inline with bullet separators."
+          ],
+          "style": "notes"
+        },
+        {
+          "id": "disclaimer",
+          "heading": "",
+          "purpose": "TEN standard disclaimer, required on investment-related documents.",
+          "fields": [],
+          "pattern": "",
+          "columns": [],
+          "rows": "",
+          "fixed_text": "Disclaimer: TEN is a \"Funding as a Service\" program. It is not a registered broker-dealer and does not offer investment advice or advise on the raising of capital through securities offerings. TEN does not recommend or otherwise suggest that any investor make an investment in a specific company, or that any company offer securities to a particular investor. TEN takes no part in the negotiation or execution of transactions for the purchase or sale of securities, and at no time has possession of funds or securities. No securities transactions are executed or negotiated on or through the TEN program. TEN receives no compensation in connection with the purchase or sale of securities.",
+          "rules": [],
+          "style": "notes"
+        }
+      ]
+    },
+    "blocked": {
+      "when": "A required input is missing or conflicting. No ownership percentage, share count or valuation for the investor may appear anywhere on the page.",
+      "layout": "+------------------------------------------------------------------------------+\n| [Company name] - [Round label] investor ownership                            |\n| Investor: [Investor] | Cap table as of [date] | Prepared [date]              |\n| UNABLE TO CALCULATE (coral)                                                  |\n| Explanation: no ownership %, share count or valuation is shown               |\n| REQUIRED INPUTS          1. [...]  2. [...]                                  |\n| INPUTS THAT COULD BE RESOLVED   Input | Value | Source                       |\n| TOP 3 DATA ISSUES        1. 2. 3.                                            |\n| SOURCE FACTS             [totals, locations, tie-out]                        |\n| Disclaimer                                                                   |\n|   [Title]   [Page #]   Compiled on [date] by TEN Capital Network   [logo]    |\n+------------------------------------------------------------------------------+",
+      "sections": [
+        {
+          "id": "header",
+          "heading": "",
+          "purpose": "Identifies company, investor and dates (no round terms, no figures).",
+          "fields": [
+            {
+              "key": "company",
+              "label": "Company",
+              "fmt": "text",
+              "source": "Cap table title cell (text before 'Cap Table')",
+              "placeholder": "[Company name]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "round_label",
+              "label": "Round",
+              "fmt": "text",
+              "source": "Name of the round share class in the cap table header, without the 'Preferred (code)' suffix",
+              "placeholder": "[Round label]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "investor",
+              "label": "Investor",
+              "fmt": "text",
+              "source": "--investor (default 'New investor')",
+              "placeholder": "[Investor name]",
+              "required": true,
+              "empty": "",
+              "max_chars": 60,
+              "notes": ""
+            },
+            {
+              "key": "cap_table_as_of",
+              "label": "Cap table as of",
+              "fmt": "date",
+              "source": "Cap table 'As of' line",
+              "placeholder": "[M/D/YYYY]",
+              "required": false,
+              "empty": "date not stated",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "prepared_date",
+              "label": "Prepared",
+              "fmt": "date",
+              "source": "Run date",
+              "placeholder": "[Month DD, YYYY]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            }
+          ],
+          "pattern": "{company} - {round_label} investor ownership\nInvestor: {investor} | Cap table as of {cap_table_as_of} | Prepared {prepared_date}",
+          "columns": [],
+          "rows": "",
+          "fixed_text": "",
+          "rules": [],
+          "style": "title"
+        },
+        {
+          "id": "status_banner",
+          "heading": "",
+          "purpose": "States plainly that no ownership figure is shown.",
+          "fields": [],
+          "pattern": "",
+          "columns": [],
+          "rows": "",
+          "fixed_text": "Unable to calculate\nThe sources do not establish every input needed for a reliable ownership figure, so no ownership percentage, share count or valuation for this investor is shown. Supply the inputs below and rerun.",
+          "rules": [],
+          "style": "banner"
+        },
+        {
+          "id": "required_inputs",
+          "heading": "Required inputs",
+          "purpose": "Each missing or conflicting input, with both conflicting values, their exact locations, and the CLI flag that resolves it.",
+          "fields": [
+            {
+              "key": "missing",
+              "label": "Missing input",
+              "fmt": "list",
+              "source": "resolve.Inputs.missing",
+              "placeholder": "[Input]: [why it is missing or conflicting, with values and locations]. Supply [--flag].",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            }
+          ],
+          "pattern": "{n}. {missing}",
+          "columns": [],
+          "rows": "",
+          "fixed_text": "",
+          "rules": [
+            "Numbered, one item per missing input, never empty in this variant."
+          ],
+          "style": "body"
+        },
+        {
+          "id": "resolved_inputs",
+          "heading": "Inputs that could be resolved",
+          "purpose": "Inputs the sources did establish.",
+          "fields": [
+            {
+              "key": "name",
+              "label": "Input",
+              "fmt": "text",
+              "source": "resolve.ResolvedInput.name",
+              "placeholder": "[Input name]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "value",
+              "label": "Value",
+              "fmt": "text",
+              "source": "Resolved value",
+              "placeholder": "[Value]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "source",
+              "label": "Source",
+              "fmt": "text",
+              "source": "Workbook, tab and cell, deck slide and quoted label, or CLI flag",
+              "placeholder": "[File | Location \"quoted label\"]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            }
+          ],
+          "pattern": "",
+          "columns": [
+            "Input",
+            "Value",
+            "Source"
+          ],
+          "rows": "One row per resolved input.",
+          "fixed_text": "",
+          "rules": [],
+          "style": "table"
+        },
+        {
+          "id": "top_issues",
+          "heading": "Top 3 data issues",
+          "purpose": "The three most material source problems: severity first, then materiality priority. INFO items never appear.",
+          "fields": [
+            {
+              "key": "title",
+              "label": "Finding",
+              "fmt": "text",
+              "source": "validate.Issue.title (generated from the values found)",
+              "placeholder": "[Finding title]",
+              "required": true,
+              "empty": "",
+              "max_chars": 110,
+              "notes": ""
+            },
+            {
+              "key": "severity",
+              "label": "Severity",
+              "fmt": "text",
+              "source": "HIGH / MEDIUM / LOW",
+              "placeholder": "HIGH|MEDIUM|LOW",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "evidence",
+              "label": "Evidence",
+              "fmt": "text",
+              "source": "Issue arithmetic, else detail",
+              "placeholder": "[Both values and the arithmetic]",
+              "required": true,
+              "empty": "",
+              "max_chars": 330,
+              "notes": ""
+            },
+            {
+              "key": "sources",
+              "label": "Source",
+              "fmt": "text",
+              "source": "Up to four exact locations (Sheet!Cell, Slide N)",
+              "placeholder": "[Sheet!Cell; Slide N]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            }
+          ],
+          "pattern": "{n}. {title} [{severity}] - {evidence} Source: {sources}.",
+          "columns": [],
+          "rows": "",
+          "fixed_text": "",
+          "rules": [
+            "Exactly three items when three or more non-INFO issues exist; fewer otherwise.",
+            "Empty state: 'No material data issues found.'"
+          ],
+          "style": "small"
+        },
+        {
+          "id": "source_facts",
+          "heading": "Source facts (for reference only, not an ownership calculation)",
+          "purpose": "Source totals and tie-out, so the reader knows the cap table itself is readable.",
+          "fields": [
+            {
+              "key": "source_outstanding",
+              "label": "Source outstanding",
+              "fmt": "shares",
+              "source": "Cap table total shares outstanding",
+              "placeholder": "[NN,NNN,NNN.NN]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "source_outstanding_ref",
+              "label": "Location",
+              "fmt": "text",
+              "source": "Sheet!Cell",
+              "placeholder": "[Sheet!Cell]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "source_fd",
+              "label": "Source fully diluted",
+              "fmt": "shares",
+              "source": "Cap table fully diluted total",
+              "placeholder": "[NN,NNN,NNN.NN]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "source_fd_ref",
+              "label": "Location",
+              "fmt": "text",
+              "source": "Sheet!Cell",
+              "placeholder": "[Sheet!Cell]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            },
+            {
+              "key": "tie_statement",
+              "label": "Tie-out",
+              "fmt": "text",
+              "source": "Result of independent re-summing",
+              "placeholder": "[both tie to independent sums | differences noted in the workbook]",
+              "required": true,
+              "empty": "",
+              "max_chars": null,
+              "notes": ""
+            }
+          ],
+          "pattern": "Source pro forma: {source_outstanding} shares outstanding ({source_outstanding_ref}) and {source_fd} fully diluted ({source_fd_ref}); {tie_statement}. Full findings and the live-formula model are in the accompanying workbook.",
+          "columns": [],
+          "rows": "",
+          "fixed_text": "",
+          "rules": [],
+          "style": "small"
+        },
+        {
+          "id": "disclaimer",
+          "heading": "",
+          "purpose": "TEN standard disclaimer, required on investment-related documents.",
+          "fields": [],
+          "pattern": "",
+          "columns": [],
+          "rows": "",
+          "fixed_text": "Disclaimer: TEN is a \"Funding as a Service\" program. It is not a registered broker-dealer and does not offer investment advice or advise on the raising of capital through securities offerings. TEN does not recommend or otherwise suggest that any investor make an investment in a specific company, or that any company offer securities to a particular investor. TEN takes no part in the negotiation or execution of transactions for the purchase or sale of securities, and at no time has possession of funds or securities. No securities transactions are executed or negotiated on or through the TEN program. TEN receives no compensation in connection with the purchase or sale of securities.",
+          "rules": [],
+          "style": "notes"
+        }
+      ]
+    }
+  }
+}

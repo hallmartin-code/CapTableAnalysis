@@ -1,0 +1,8 @@
+# Confidential source files, generated reports and secrets
+inputs/
+output/
+jobs/
+__pycache__/
+.env
+.env.*
+!.env.example
