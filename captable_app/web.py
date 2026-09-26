@@ -2,7 +2,7 @@
 
     uvicorn captable_app.web:app --port 8000
 
-Access is protected by HTTP Basic auth (password in APP_PASSWORD; any user name). Uploaded files
+The app is open: there is no login. Uploaded files
 and results live in a per-job folder that is deleted after JOB_TTL_MINUTES. Jobs are held in this
 process's memory, so run a single worker.
 """
@@ -11,7 +11,6 @@ from __future__ import annotations
 import logging
 import os
 import re
-import secrets
 import shutil
 import tempfile
 import threading
@@ -21,9 +20,8 @@ from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 from typing import Optional
 
-from fastapi import Depends, FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.staticfiles import StaticFiles
 
 try:
@@ -51,24 +49,13 @@ AI_DEFAULT = AI_AVAILABLE and os.environ.get("AI_REVIEW_DEFAULT", "true").lower(
 async def lifespan(_app):
     os.makedirs(JOBS_DIR, exist_ok=True)
     threading.Thread(target=_janitor, daemon=True).start()
-    if not os.environ.get("APP_PASSWORD"):
-        log.warning("APP_PASSWORD is not set: every page except /healthz will return 503.")
     yield
 
 
 app = FastAPI(title="Investor Ownership Calculator", docs_url=None, redoc_url=None, openapi_url=None,
               lifespan=lifespan)
-security = HTTPBasic(auto_error=False)
 # Public, unauthenticated assets (favicons) served from the project's public/ directory.
 app.mount("/public", StaticFiles(directory=PUBLIC_DIR), name="public")
-
-
-def require_auth(creds: Optional[HTTPBasicCredentials] = Depends(security)) -> None:
-    password = os.environ.get("APP_PASSWORD")
-    if not password:
-        raise HTTPException(503, "APP_PASSWORD is not configured on the server.")
-    if creds is None or not secrets.compare_digest(creds.password.encode(), password.encode()):
-        raise HTTPException(401, "Authentication required", headers={"WWW-Authenticate": 'Basic realm="ownership"'})
 
 
 # ------------------------------------------------------------------------------------ jobs
@@ -201,7 +188,7 @@ def healthz():
     return {"ok": True}
 
 
-@app.get("/", response_class=HTMLResponse, dependencies=[Depends(require_auth)])
+@app.get("/", response_class=HTMLResponse)
 def index():
     return ui.index_page(AI_AVAILABLE, AI_DEFAULT, notify.recipients() if notify.is_configured() else None,
                          JOB_TTL_MINUTES, MAX_UPLOAD_MB)
@@ -218,7 +205,7 @@ def logo():
     return FileResponse(LOGO, media_type="image/png", headers={"Cache-Control": "public, max-age=86400"})
 
 
-@app.post("/analyze", dependencies=[Depends(require_auth)])
+@app.post("/analyze")
 async def analyze_upload(cap_table: UploadFile = File(...), deck: UploadFile = File(...),
                          investor: str = Form(""), check_size: str = Form(""), share_price: str = Form(""),
                          commitments_in_before: str = Form(""), uncounted_commitments: str = Form(""),
@@ -238,7 +225,7 @@ async def analyze_upload(cap_table: UploadFile = File(...), deck: UploadFile = F
     return RedirectResponse(f"/jobs/{job.id}", status_code=303)
 
 
-@app.post("/jobs/{job_id}/rerun", dependencies=[Depends(require_auth)])
+@app.post("/jobs/{job_id}/rerun")
 def rerun(job_id: str, investor: str = Form(""), check_size: str = Form(""), share_price: str = Form(""),
           commitments_in_before: str = Form(""), uncounted_commitments: str = Form(""),
           placeholder: str = Form("release"), pre_money: str = Form(""), ai_review: Optional[str] = Form(None)):
@@ -253,13 +240,13 @@ def rerun(job_id: str, investor: str = Form(""), check_size: str = Form(""), sha
     return RedirectResponse(f"/jobs/{job.id}", status_code=303)
 
 
-@app.get("/jobs/{job_id}/status", dependencies=[Depends(require_auth)])
+@app.get("/jobs/{job_id}/status")
 def job_status(job_id: str):
     j = _job(job_id)
     return JSONResponse({"status": j.status, "progress": j.progress[-1:] or ["Queued"], "log": j.progress})
 
 
-@app.get("/jobs/{job_id}/download/{kind}", dependencies=[Depends(require_auth)])
+@app.get("/jobs/{job_id}/download/{kind}")
 def download(job_id: str, kind: str):
     j = _job(job_id)
     if j.status != "done" or j.result is None:
@@ -273,7 +260,7 @@ def download(job_id: str, kind: str):
     return FileResponse(path, filename=os.path.basename(path))
 
 
-@app.get("/jobs/{job_id}", response_class=HTMLResponse, dependencies=[Depends(require_auth)])
+@app.get("/jobs/{job_id}", response_class=HTMLResponse)
 def job_page(job_id: str):
     j = _job(job_id)
     if j.status in ("queued", "running"):

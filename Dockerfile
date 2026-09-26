@@ -1,4 +1,4 @@
-# Railway builds this image. Secrets (ANTHROPIC_API_KEY, APP_PASSWORD) are NOT baked in:
+# Railway builds this image. Secrets (ANTHROPIC_API_KEY, RESEND_API_KEY) are NOT baked in:
 # they arrive as Railway variables at runtime.
 FROM python:3.12-slim
 

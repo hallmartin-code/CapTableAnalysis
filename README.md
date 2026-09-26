@@ -50,9 +50,9 @@ CLI: add `--email`. Tests never send email (the Resend key is removed from the e
 
 ## Web app and Railway
 
-Local: `uvicorn captable_app.web:app --port 8000` (reads `.env`; set `APP_PASSWORD`).
+Local: `uvicorn captable_app.web:app --port 8000` (reads `.env`).
 Production: Railway project `investor-ownership-calculator`, service `ownership-web`,
-https://ownership-web-production.up.railway.app (HTTP Basic auth: any user name + `APP_PASSWORD`).
+https://ownership-web-production.up.railway.app (open access, no login).
 Redeploy from this folder with:
 
 ```
@@ -61,7 +61,7 @@ railway up . --path-as-root --service ownership-web --ci
 
 `--path-as-root` matters: this folder sits inside a larger git repository, and it keeps the upload to this
 folder only. `.railwayignore` excludes `.env`, `inputs/`, `output/` and tests. Variables: `ANTHROPIC_API_KEY`,
-`APP_PASSWORD`, `RESEND_API_KEY`, `RESEND_TO`, `RESEND_FROM`, `CLAUDE_MODEL`, `CLAUDE_EFFORT`, `MAX_UPLOAD_MB` (200), `JOB_TTL_MINUTES` (60), `AI_REVIEW_DEFAULT`.
+`RESEND_API_KEY`, `RESEND_TO`, `RESEND_FROM`, `CLAUDE_MODEL`, `CLAUDE_EFFORT`, `MAX_UPLOAD_MB` (200), `JOB_TTL_MINUTES` (60), `AI_REVIEW_DEFAULT`.
 
 ## Document structure template
 
